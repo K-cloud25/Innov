@@ -1,10 +1,14 @@
 import { StyleSheet, Text, View, Button, SafeAreaView } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
-import { Camera } from 'expo-camera';
+import { Camera, Constants } from 'expo-camera';
 import { Video } from 'expo-av';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
-import { cameraWithTensors } from '@tensorflow/tfjs-react-native';
+
+//For Flask API Call hosted on the same local device
+const ip_add = "192.168.188.170"
+const port_add = "5000"
+const uri = "http://" + {ip_add} +":"+{port_add}+"/phone"
 
 export default function CameraPage(){
     let cameraRef = useRef();
@@ -31,6 +35,36 @@ export default function CameraPage(){
     } else if (!hasCameraPermission) {
       return <Text>Permission for camera not granted.</Text>
     }
+
+    const runner = () => {
+
+      recordVideo()
+
+      setTimeout(()=>{
+        stopRecording()
+        //Get Video from local storage and send to drive 
+        /*
+        try{
+          let res = fetch(uri,{
+            method : 'POST',
+            headers :{
+              Accept : 'application/json',
+              'Content-type' : 'application/json',
+            },
+            body : JSON.stringify({
+              str : "Hello",
+            }),
+          });
+          result = res.json();
+          console.log(result)
+        }catch(e){
+          console.log(e);
+        }
+
+        */
+
+      },5000)
+    }
   
     let recordVideo = () => {
       setIsRecording(true);
@@ -49,6 +83,7 @@ export default function CameraPage(){
     let stopRecording = () => {
       setIsRecording(false);
       cameraRef.current.stopRecording();
+      saveVideo();
     };
   
     if (video) {
@@ -59,9 +94,7 @@ export default function CameraPage(){
       };
   
       let saveVideo = () => {
-        MediaLibrary.saveToLibraryAsync(video.uri).then(() => {
-          setVideo(undefined);
-        });
+        console.log("Upload to GDrive");
       };
   
       return (
@@ -83,7 +116,7 @@ export default function CameraPage(){
     return (
       <Camera style={styles.container} ref={cameraRef}>
         <View style={styles.buttonContainer}>
-          <Button title={isRecording ? "Stop Recording" : "Record Video"} onPress={isRecording ? stopRecording : recordVideo} />
+          <Button title={isRecording ? "Stop Recording" : "Record Video"} onPress={runner} />
         </View>
       </Camera>
     );
