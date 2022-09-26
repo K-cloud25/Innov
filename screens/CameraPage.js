@@ -45,6 +45,7 @@ export default function CameraPage(){
         //Get Video from local storage and send to drive 
         /*
         try{
+          
           let res = fetch(uri,{
             method : 'POST',
             headers :{
