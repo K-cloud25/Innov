@@ -35,6 +35,7 @@ export default function CameraPage(){
     } else if (!hasCameraPermission) {
       return <Text>Permission for camera not granted.</Text>
     }
+    const formData = new FormData()
 
     const runner = () => {
 
@@ -42,19 +43,12 @@ export default function CameraPage(){
 
       setTimeout(()=>{
         stopRecording()
-        //Get Video from local storage and send to drive 
-        /*
+    
         try{
           
           let res = fetch(uri,{
             method : 'POST',
-            headers :{
-              Accept : 'application/json',
-              'Content-type' : 'application/json',
-            },
-            body : JSON.stringify({
-              str : "Hello",
-            }),
+            body : formData
           });
           result = res.json();
           console.log(result)
@@ -62,7 +56,7 @@ export default function CameraPage(){
           console.log(e);
         }
 
-        */
+        
 
       },5000)
     }
@@ -77,6 +71,8 @@ export default function CameraPage(){
   
       cameraRef.current.recordAsync(options).then((recordedVideo) => {
         setVideo(recordedVideo);
+        
+        formData.append('video', video)
         setIsRecording(false);
       });
     };
@@ -84,7 +80,7 @@ export default function CameraPage(){
     let stopRecording = () => {
       setIsRecording(false);
       cameraRef.current.stopRecording();
-      saveVideo();
+      
     };
   
     if (video) {
@@ -94,9 +90,7 @@ export default function CameraPage(){
         });
       };
   
-      let saveVideo = () => {
-        console.log("Upload to GDrive");
-      };
+
   
       return (
         <SafeAreaView style={styles.container}>
