@@ -6,7 +6,7 @@ import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 
 //For Flask API Call hosted on the same local device
-const ip_add = "192.168.188.170"
+const ip_add = "192.168.214.170"
 const port_add = "5000"
 const uri = "http://" + {ip_add} +":"+{port_add}+"/phone"
 
@@ -40,24 +40,24 @@ export default function CameraPage(){
     const runner = () => {
 
       recordVideo()
-
       setTimeout(()=>{
         stopRecording()
-    
-        try{
-          
-          let res = fetch(uri,{
-            method : 'POST',
-            body : formData
-          });
-          result = res.json();
-          console.log(result)
-        }catch(e){
-          console.log(e);
+
+        url = "http://192.168.214.170:5000/phone"
+
+        const getArticlesFromApi = async () => {
+            let response = await fetch(
+              url,{
+                method : 'POST',
+                body : formData
+              }); 
+            let json = await response.json();
+            console.log(json)
+            return json;
         }
 
-        
-
+        getArticlesFromApi();
+      
       },5000)
     }
   
@@ -102,7 +102,7 @@ export default function CameraPage(){
             isLooping
           />
           <Button title="Share" onPress={shareVideo} />
-          {hasMediaLibraryPermission ? <Button title="Save" onPress={saveVideo} /> : undefined}
+          {hasMediaLibraryPermission ? <Button title="Save" /> : undefined}
           <Button title="Discard" onPress={() => setVideo(undefined)} />
         </SafeAreaView>
       );
